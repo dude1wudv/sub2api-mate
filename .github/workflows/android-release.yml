@@ -88,6 +88,14 @@ jobs:
 
       - name: Build signed APK
         working-directory: android
+        env:
+          # ORG_GRADLE_PROJECT_* makes the values visible to the :app project
+          # as well as the root project; this keeps release signing stable on
+          # runners whose Gradle properties are isolated per project.
+          ORG_GRADLE_PROJECT_MYAPP_UPLOAD_STORE_FILE: release.keystore
+          ORG_GRADLE_PROJECT_MYAPP_UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ORG_GRADLE_PROJECT_MYAPP_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ORG_GRADLE_PROJECT_MYAPP_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
           ./gradlew :app:assembleRelease -PreactNativeArchitectures=${{ matrix.abi }} -x lintVitalAnalyzeRelease --max-workers=2 --no-daemon --stacktrace
