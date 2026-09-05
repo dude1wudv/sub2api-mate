@@ -6,18 +6,19 @@
 
 The application is currently bound to:
 
-- Expo owner: `trilogys`
-- Expo slug: `sub2api-mobile`
-- Expo project ID: `13df808b-fe18-475e-b188-f4dd64e90e7e`
-- Android package: `com.ppx.sub2apimobile`
-- iOS bundle identifier: `com.ppx.sub2apimobile`
+- GitHub owner: `dude1wudv`
+- GitHub repository: `dude1wudv/sub2api-mate`
+- Expo slug: `sub2api-mate`
+- Expo project ID: not configured (create a project under `dude1wudv` before using EAS)
+- Android package: `com.ppx.sub2apimate`
+- iOS bundle identifier: `com.ppx.sub2apimate`
 - Runtime version policy: `appVersion`
 
-The public application name is `sub2api`.
+The public application name is `Sub2API Mate`.
 
 ## Choose a build method
 
-The in-app Build Center defaults to the GitHub native workflow. Use EAS when managed Expo credentials, EAS Update, or Expo-hosted build history is preferred.
+The in-app Build Center defaults to the GitHub native workflow. GitHub Releases are the default update and distribution channel for this fork. Use EAS only after creating a new Expo project under `dude1wudv` and wiring its project ID into the fork.
 
 | Method | Queue | Required secret | Output | Best use |
 | --- | --- | --- | --- | --- |
@@ -44,10 +45,10 @@ When triggered from the app, GitHub Jobs API data is used to show each step's wa
 
 ## First EAS preview APK
 
-Run the first EAS build on a computer so project ownership and Android signing credentials can be confirmed:
+Run the first EAS build on a computer only after project ownership and Android signing credentials for the fork can be confirmed:
 
 ```powershell
-cd D:\Project\node\sub2api-mobile
+cd E:\MobileAppWorkspace\02-source-repos\sub2api-mate
 npm ci
 npx eas-cli@latest login
 npx eas-cli@latest whoami
@@ -126,7 +127,7 @@ npx expo export --platform android
 
 Also confirm that:
 
-- The icon, splash, name, package identifiers, and Expo owner are correct.
+- The icon, splash, name, package identifiers, and GitHub release owner are correct.
 - No token is committed to the repository.
 - Both login modes reach the intended server.
 - A release APK installs and opens on a physical Android device.

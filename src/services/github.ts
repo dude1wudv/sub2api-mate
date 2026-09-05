@@ -1,6 +1,11 @@
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
+import {
+  APP_REPOSITORY,
+  LEGACY_APP_REPOSITORIES,
+} from '@/src/config/app-repository';
+
 export const GITHUB_CONFIG_STORAGE_KEY = 'sub2api_github_config_v1';
 
 export type GitHubConfig = {
@@ -77,7 +82,7 @@ const apiBase = 'https://api.github.com';
 const allowedPath = /^(?:app|src)\/.+\.(?:ts|tsx|js|jsx|json)$/;
 
 export const defaultGitHubConfig: GitHubConfig = {
-  repository: 'trilogys/sub2api-mate',
+  repository: APP_REPOSITORY,
   token: '',
   baseBranch: 'main',
 };
@@ -138,7 +143,7 @@ export async function loadGitHubConfig(): Promise<GitHubConfig> {
     return {
       ...defaultGitHubConfig,
       ...saved,
-      repository: saved.repository === 'trilogys/sub2api-mobile'
+      repository: LEGACY_APP_REPOSITORIES.includes(saved.repository as typeof LEGACY_APP_REPOSITORIES[number])
         ? defaultGitHubConfig.repository
         : saved.repository ?? defaultGitHubConfig.repository,
     };

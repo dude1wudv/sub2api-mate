@@ -4,8 +4,8 @@ Sub2API Mobile was inspired by the open-source project [ckken/sub2api-mobile](ht
 
 The original work is licensed under the MIT License and carries `Copyright (c) 2026 ckken`. This repository preserves that copyright and the complete MIT permission notice in [LICENSES/MIT-ckken.txt](LICENSES/MIT-ckken.txt).
 
-The trilogys repository is distributed under the Apache License 2.0 in [LICENSE](LICENSE). The preserved MIT terms continue to apply to material derived from the upstream project.
+The dude1wudv repository is distributed under the Apache License 2.0 in [LICENSE](LICENSE). The preserved MIT terms continue to apply to material derived from the upstream project.
 
-Subsequent mobile interface work, expanded Sub2API administration coverage, API metadata tooling, the AI assistant, GitHub and EAS build workflows, and related documentation in this repository are maintained by the trilogys contributors.
+Subsequent mobile interface work, expanded Sub2API administration coverage, API metadata tooling, the AI assistant, GitHub and EAS build workflows, and related documentation in this repository are maintained by the dude1wudv contributors.
 
 References to the upstream project acknowledge its open-source contribution and inspiration. They do not imply sponsorship, endorsement, or an official relationship.

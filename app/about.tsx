@@ -13,8 +13,9 @@ import { ScreenShell } from '@/src/components/screen-shell';
 import { downloadAndInstallAndroidApk, type AndroidAppUpdateProgress } from '@/src/services/android-app-update';
 import { APP_REPOSITORY_URL, APP_UPDATE_CHECK_INTERVAL_MS, findAndroidApk, getLatestAppRelease, isNewerAppVersion } from '@/src/services/app-release';
 import { defaultUIPreferences, loadUIPreferences, normalizeUIPreferences, saveUIPreferences, type UIPreferences } from '@/src/store/ui-preferences';
+import { APP_AUTHOR_LABEL, APP_RELEASES_URL, APP_UPDATE_SOURCE, APP_REPOSITORY } from '@/src/config/app-repository';
 
-const currentVersion = Constants.expoConfig?.version ?? '1.4.0';
+const currentVersion = Constants.expoConfig?.version ?? '1.5.0';
 
 function formatBytes(bytes: number) {
   if (!Number.isFinite(bytes) || bytes <= 0) return '0 MB';
@@ -124,9 +125,10 @@ export default function AboutScreen() {
           <Image source={require('../assets/icon.png')} style={{ width: 80, height: 80, borderRadius: 22 }} resizeMode="cover" />
           <Text className="mt-3 text-xl font-bold text-[#172033] dark:text-[#F4F7FB]">Sub2API Mate</Text>
           <Text className="mt-1 text-xs text-[#6B778C] dark:text-[#9EABC0]">版本 {currentVersion} · Expo SDK 54 · {Platform.OS === 'android' ? 'Android' : Platform.OS === 'ios' ? 'iOS' : 'Web'}</Text>
+          <Text className="mt-1 text-[10px] text-[#7B8798] dark:text-[#9EABC0]">作者 / 维护者 {APP_AUTHOR_LABEL} · 更新源 {APP_UPDATE_SOURCE}</Text>
         </View>
 
-        <AdminSection title="升级提示" detail="每 5 分钟自动检查 GitHub Release；下拉页面也可以重新检查。">
+        <AdminSection title="升级提示" detail={`每 5 分钟自动检查 ${APP_UPDATE_SOURCE}；下拉页面也可以重新检查。`}>
           <View className={`flex-row items-center gap-3 rounded-2xl p-3 ${hasUpdate ? 'bg-[#FFF6E7] dark:bg-[#3B2B16]' : 'bg-[#EFFAF4] dark:bg-[#153326]'}`}>
             {hasUpdate ? <CircleAlert size={20} color="#D88A18" /> : <CheckCircle2 size={20} color="#20A66A" />}
             <View className="flex-1">
@@ -189,18 +191,18 @@ export default function AboutScreen() {
           <Text className="text-[10px] leading-4 text-[#7B8798] dark:text-[#9EABC0]">Android 会在 App 内下载 APK 并显示进度，完成后由系统安装程序确认安装；签名不一致时需要先卸载旧版。App 无法静默覆盖安装。</Text>
         </AdminSection>
 
-        <AdminSection title="Expo 在线更新" detail="仅更新 JavaScript 与资源；原生依赖、权限或 Expo SDK 变化仍需安装新 APK。">
+        <AdminSection title="Expo 在线更新（可选）" detail="本项目默认通过 GitHub Release 发布 APK；仅在你为 Fork 配置 EAS 项目后使用 Expo 在线更新。">
           <View className="flex-row items-start gap-3 rounded-2xl bg-[#EAF2FF] p-3 dark:bg-[#172C55]">
             <RefreshCw size={19} color="#2F6DF6" />
-            <Text className="flex-1 text-xs leading-5 text-[#315B9C] dark:text-[#AFC9F7]">正式包启用 EAS Update 后，可以在这里下载在线更新并重启应用完成升级。</Text>
+            <Text className="flex-1 text-xs leading-5 text-[#315B9C] dark:text-[#AFC9F7]">默认更新源为 {APP_REPOSITORY} 的 GitHub Releases；配置新的 EAS 项目后才会启用 Expo 在线更新。</Text>
           </View>
-          <AdminButton label="检查 Expo 在线更新" pending={otaMutation.isPending} onPress={() => otaMutation.mutate()} />
+          <AdminButton label={Updates.isEnabled ? '检查 Expo 在线更新' : 'EAS 尚未配置'} pending={otaMutation.isPending} disabled={!Updates.isEnabled} onPress={() => otaMutation.mutate()} />
           <AdminMessage error={otaMutation.error} />
         </AdminSection>
 
         <AdminSection title="开源项目" detail="代码、发布版本、问题反馈与许可证信息。">
-          <ExternalRow icon={Github} title="开源仓库" detail="trilogys/sub2api-mate" url={APP_REPOSITORY_URL} />
-          <ExternalRow icon={Download} title="版本与 APK" detail="查看全部 GitHub Releases" url={`${APP_REPOSITORY_URL}/releases`} />
+          <ExternalRow icon={Github} title="开源仓库" detail={`${APP_REPOSITORY} · ${APP_AUTHOR_LABEL}`} url={APP_REPOSITORY_URL} />
+          <ExternalRow icon={Download} title="版本与 APK" detail="查看全部 GitHub Releases" url={APP_RELEASES_URL} />
           <ExternalRow icon={CircleAlert} title="问题反馈" detail="提交 Bug、建议或兼容性问题" url={`${APP_REPOSITORY_URL}/issues`} />
           <ExternalRow icon={FileText} title="Apache License 2.0" detail="查看本项目开源许可证" url={`${APP_REPOSITORY_URL}/blob/main/LICENSE`} />
           <ExternalRow icon={Code2} title="灵感来源" detail="感谢 ckken/sub2api-mobile 的开源成果" url="https://github.com/ckken/sub2api-mobile" />

@@ -23,7 +23,10 @@ export type EASWorkflowRun = {
 const apiBase = 'https://api.expo.dev';
 
 export const EXPO_TOKEN_STORAGE_KEY = 'sub2api_expo_access_token';
-export const EAS_PROJECT_ID = '13df808b-fe18-475e-b188-f4dd64e90e7e';
+// The original project belonged to another Expo account. Leave this empty
+// until the fork owner creates their own EAS project; GitHub Releases remain
+// the default APK distribution channel in the meantime.
+export const EAS_PROJECT_ID = '';
 export const EAS_DEFAULT_GIT_REF = 'main';
 
 async function easFetch<T>(path: string, token: string, init?: RequestInit): Promise<T> {

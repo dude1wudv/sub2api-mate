@@ -12,13 +12,19 @@ import { dispatchGitHubWorkflow, getGitHubWorkflowRunDetails, getLatestGitHubWor
 import type { GitHubConfig, GitHubWorkflowStep } from '@/src/services/github';
 import { Text } from '@/src/components/localized-text';
 import { LocalizedStackScreen } from '@/src/components/localized-navigation';
+import {
+  APP_NATIVE_BUILD_WORKFLOW,
+  APP_RELEASES_URL,
+  APP_REPOSITORY,
+  APP_REPOSITORY_URL,
+} from '@/src/config/app-repository';
 
-const repository = 'https://github.com/trilogys/sub2api-mate';
+const repository = APP_REPOSITORY_URL;
 const buildWorkflow = `${repository}/actions/workflows/eas-build.yml`;
-const nativeBuildWorkflow = 'android-native-build.yml';
+const nativeBuildWorkflow = APP_NATIVE_BUILD_WORKFLOW;
 const apiSyncWorkflow = `${repository}/actions/workflows/sync-sub2api-api.yml`;
 const actions = `${repository}/actions`;
-const easBuilds = 'https://expo.dev/accounts/trilogys/projects/sub2api-mobile/builds';
+const releases = APP_RELEASES_URL;
 
 function open(url: string) {
   return Linking.openURL(url);
@@ -136,7 +142,7 @@ export default function BuildCenterScreen() {
   const completedSteps = nativeSteps.filter((step) => step.status === 'completed').length;
   const nativeProgress = nativeSteps.length ? Math.round((completedSteps / nativeSteps.length) * 100) : nativeRun?.status === 'completed' ? 100 : 0;
   const apkArtifacts = (nativeDetails?.artifacts ?? []).filter((artifact) => artifact.name.toLowerCase().includes('apk'));
-  const nativeRepository = normalizeGitHubRepository(githubConfig?.repository || 'trilogys/sub2api-mate');
+  const nativeRepository = normalizeGitHubRepository(githubConfig?.repository || APP_REPOSITORY);
   const nativeWorkflowUrl = `https://github.com/${nativeRepository}/actions/workflows/${nativeBuildWorkflow}`;
   const nativeStatus = !githubRequestedAt
     ? undefined
@@ -171,19 +177,20 @@ export default function BuildCenterScreen() {
             <Text className="flex-1 text-xs leading-5 text-[#2F6DF6]">构建由 EAS 云端执行；App 只提交构建请求并轮询状态。</Text>
           </View>
           <AdminField label="Git 分支或标签" value={gitRef} onChangeText={setGitRef} placeholder="main" autoCapitalize="none" autoCorrect={false} />
-          <AdminButton label="直接调用 EAS 构建" pending={dispatch.isPending} disabled={!token.trim() || !gitRef.trim()} onPress={() => dispatch.mutate()} />
+          {!EAS_PROJECT_ID ? <Text className="text-xs leading-5 text-[#D88A18] dark:text-[#FFD18A]">此 Fork 尚未绑定 Expo/EAS 项目。请先在你的 Expo 账号中创建项目并更新 `src/services/eas.ts`；当前可直接使用 GitHub 原生构建和 Releases。</Text> : null}
+          <AdminButton label="直接调用 EAS 构建" pending={dispatch.isPending} disabled={!EAS_PROJECT_ID || !token.trim() || !gitRef.trim()} onPress={() => dispatch.mutate()} />
           <AdminMessage error={dispatch.error || runQuery.error} success={runId ? `EAS 状态：${status ?? '已排队'}` : undefined} />
           {runUrl ? <AdminButton label="打开本次 EAS 任务" onPress={() => open(runUrl)} /> : null}
           <AdminButton label="GitHub Actions 备用入口" tone="muted" onPress={() => open(buildWorkflow)} />
           <AdminButton label="查看并下载最新 APK" tone="muted" onPress={() => open(actions)} />
-          <AdminButton label="查看 EAS 构建记录" tone="muted" onPress={() => open(easBuilds)} />
+          <AdminButton label="查看本仓库 Releases" tone="muted" onPress={() => open(releases)} />
         </AdminSection> : <AdminSection title="GitHub Actions 原生 APK" detail="GitHub Runner 执行 Expo Prebuild 和 Gradle，APK 作为 Actions Artifact 保存 14 天，不使用 EAS 构建队列。">
           <View className="flex-row items-start gap-3 rounded-2xl bg-[#EAF2FF] dark:bg-[#172C55] p-3">
             <ExternalLink size={18} color="#2F6DF6" />
             <Text className="flex-1 text-xs leading-5 text-[#2F6DF6]">Release 用于独立安装测试；Debug 适合排错，通常需要 Metro 开发服务器。</Text>
           </View>
-          <AdminField label="构建仓库" value={githubConfig?.repository ?? 'trilogys/sub2api-mate'} onChangeText={(repository) => { setGitHubConfig((current) => ({ ...(current ?? { repository: 'trilogys/sub2api-mate', token: '', baseBranch: 'main' }), repository })); setRepositorySaved(false); }} placeholder="trilogys/sub2api-mate" autoCapitalize="none" autoCorrect={false} />
-          <Text className="text-[11px] leading-5 text-[#6B778C] dark:text-[#9EABC0]">默认使用 trilogys/sub2api-mate。目标仓库必须包含 {nativeBuildWorkflow} 工作流。</Text>
+          <AdminField label="构建仓库" value={githubConfig?.repository ?? APP_REPOSITORY} onChangeText={(repository) => { setGitHubConfig((current) => ({ ...(current ?? { repository: APP_REPOSITORY, token: '', baseBranch: 'main' }), repository })); setRepositorySaved(false); }} placeholder={APP_REPOSITORY} autoCapitalize="none" autoCorrect={false} />
+          <Text className="text-[11px] leading-5 text-[#6B778C] dark:text-[#9EABC0]">默认使用 {APP_REPOSITORY}。目标仓库必须包含 {nativeBuildWorkflow} 工作流。</Text>
           <AdminButton label={repositorySaved ? '仓库已保存' : '保存并切换构建仓库'} tone="muted" disabled={!githubConfig?.repository || Platform.OS === 'web'} onPress={saveRepository} />
           <AdminField label="Git 分支或标签" value={gitRef} onChangeText={setGitRef} placeholder="main" autoCapitalize="none" autoCorrect={false} />
           <View className="flex-row gap-2">
@@ -202,6 +209,7 @@ export default function BuildCenterScreen() {
           </View> : null}
           {nativeRun?.html_url ? <AdminButton label={apkArtifacts.length ? '打开 GitHub 下载 APK' : nativeRun.status === 'completed' ? '打开任务查看日志' : '打开本次 GitHub Actions 任务'} onPress={() => open(nativeRun.html_url)} /> : null}
           <AdminButton label="在 GitHub 网页手动运行" tone="muted" onPress={() => open(nativeWorkflowUrl)} />
+          <AdminButton label="查看 GitHub Releases" tone="muted" onPress={() => open(releases)} />
         </AdminSection>}
 
         <AdminSection title="最新 API 检索" detail="GitHub 每天自动提取 Wei-Shaw/sub2api 的管理端路由与参数元数据；发现变化时创建或更新 API 清单 PR。">

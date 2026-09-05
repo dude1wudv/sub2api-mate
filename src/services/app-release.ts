@@ -1,5 +1,10 @@
-export const APP_REPOSITORY = 'trilogys/sub2api-mate';
-export const APP_REPOSITORY_URL = `https://github.com/${APP_REPOSITORY}`;
+import {
+  APP_RELEASES_URL,
+  APP_REPOSITORY,
+  APP_REPOSITORY_URL,
+} from '@/src/config/app-repository';
+
+export { APP_RELEASES_URL, APP_REPOSITORY, APP_REPOSITORY_URL };
 export const APP_UPDATE_CHECK_INTERVAL_MS = 5 * 60_000;
 
 export type AppReleaseAsset = {

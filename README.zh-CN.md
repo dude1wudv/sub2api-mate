@@ -11,9 +11,9 @@
 </p>
 
 > [!IMPORTANT]
-> **灵感来源与致谢。** 本项目的灵感来自 [ckken/sub2api-mobile](https://github.com/ckken/sub2api-mobile)。衷心感谢 ckken 发布原始开源成果。上游项目使用 MIT License，本仓库在 [LICENSES/MIT-ckken.txt](LICENSES/MIT-ckken.txt) 中完整保留了原作者版权声明和许可证正文。本仓库大幅扩展的移动端界面、管理功能覆盖、AI 助手、构建中心和自动化由 trilogys contributors 独立维护；这不表示原作者对本项目提供背书。
+> **灵感来源与致谢。** 本项目的灵感来自 [ckken/sub2api-mobile](https://github.com/ckken/sub2api-mobile)。衷心感谢 ckken 发布原始开源成果。上游项目使用 MIT License，本仓库在 [LICENSES/MIT-ckken.txt](LICENSES/MIT-ckken.txt) 中完整保留了原作者版权声明和许可证正文。本仓库大幅扩展的移动端界面、管理功能覆盖、AI 助手、构建中心和自动化由 dude1wudv contributors 独立维护；这不表示原作者对本项目提供背书。
 
-当前维护仓库为 [trilogys/sub2api-mate](https://github.com/trilogys/sub2api-mate)。本仓库不会自动合并或同步其他 Sub2API Mobile Fork 的源代码；定时同步功能只读取 Sub2API 服务端的 API 元数据。
+当前维护仓库为 [dude1wudv/sub2api-mate](https://github.com/dude1wudv/sub2api-mate)。本仓库不会自动合并或同步其他 Sub2API Mobile Fork 的源代码；定时同步功能只读取 Sub2API 服务端的 API 元数据。
 
 ## 项目简介
 
@@ -84,6 +84,13 @@ Admin Key 本身不包含“当前用户”身份，因此个人密钥增删改�
 - 运维实时概览包含健康状态、告警、系统日志、请求速率、活动密钥、账号状态和近期趋势。
 - 独立错误中心和结构化运维诊断入口。
 
+### Android 桌面小组件
+
+- 使用 `react-native-android-widget` 原生渲染监控卡片，只缓存脱敏统计，不保存密钥或服务端响应。
+- 根据桌面启动器提供的宽高自动切换微型、紧凑、标准和展开布局；列宽使用权重分配，文字使用 Android 自适应字号，避免高密度或窄屏右侧裁切。
+- 通过独立配置插件将 AppWidget Provider 标记为可接收 Android 11 广播，兼容荣耀 MagicOS 11 的桌面刷新、缩放、深浅色模式和 `sub2apimobile://monitor` 点击跳转。
+- Android 系统周期刷新遵循平台 30 分钟下限；打开 App 或刷新监控后会立即推送最新快照。
+
 ### 账号管理
 
 - 新增账号的类型和字段尽量与官方 Sub2API 保持一致。
@@ -144,7 +151,7 @@ AI 助手页面可以开启悬浮助手。长按可移动，靠边时可以部�
 
 ### 受控的 GitHub 修复流程
 
-GitHub 设置默认仓库为 `trilogys/sub2api-mate`，也支持修改并保存。Fine-grained Token 应只授权目标仓库和必要权限：
+GitHub 设置默认仓库为 `dude1wudv/sub2api-mate`，也支持修改并保存。Fine-grained Token 应只授权目标仓库和必要权限：
 
 - Contents：读写
 - Pull requests：读写
@@ -182,14 +189,26 @@ AI 生成的是待审核建议，不代表已经通过测试。合并前仍需�
 - 根据已完成步骤计算的近似百分比
 - APK Artifact 是否可下载、大小、过期时间和下载入口
 
-目标仓库可以切换，默认是 `trilogys/sub2api-mate`。
+目标仓库可以切换，默认是 `dude1wudv/sub2api-mate`。
+
+### GitHub Release 发布
+
+`.github/workflows/android-release.yml` 在推送 `v*` 标签时构建
+`arm64-v8a`、`armeabi-v7a` 和 `x86_64` 签名 APK，生成 SHA-256 校验文件，并上传到对应的 GitHub Release。发布前请在仓库 **Settings → Secrets and variables → Actions** 配置：
+
+- `ANDROID_KEYSTORE_BASE64`
+- `ANDROID_KEYSTORE_PASSWORD`
+- `ANDROID_KEY_ALIAS`
+- `ANDROID_KEY_PASSWORD`
+
+缺少签名密钥时工作流会直接失败，避免后续版本更换签名导致已安装版本无法覆盖更新。
 
 ### EAS Preview APK
 
 `eas.json` 的 `preview` 使用 internal distribution，并配置 `android.buildType: apk`。
 
 ```powershell
-cd D:\Project\node\sub2api-mobile
+cd E:\MobileAppWorkspace\02-source-repos\sub2api-mate
 npm ci
 npx eas-cli@latest login
 npx eas-cli@latest build --platform android --profile preview

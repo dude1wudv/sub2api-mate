@@ -11,9 +11,9 @@
 </p>
 
 > [!IMPORTANT]
-> **Inspiration and thanks.** This project was inspired by [ckken/sub2api-mobile](https://github.com/ckken/sub2api-mobile). We sincerely thank ckken for publishing the original open-source work. The upstream project is licensed under the MIT License, and this repository preserves its original copyright and complete license text in [LICENSES/MIT-ckken.txt](LICENSES/MIT-ckken.txt). The extensive mobile UI, administration coverage, AI assistant, build center, and automation in this repository are independently maintained by the trilogys contributors. No endorsement by the upstream author is implied.
+> **Inspiration and thanks.** This project was inspired by [ckken/sub2api-mobile](https://github.com/ckken/sub2api-mobile). We sincerely thank ckken for publishing the original open-source work. The upstream project is licensed under the MIT License, and this repository preserves its original copyright and complete license text in [LICENSES/MIT-ckken.txt](LICENSES/MIT-ckken.txt). The extensive mobile UI, administration coverage, AI assistant, build center, and automation in this repository are independently maintained by the dude1wudv contributors. No endorsement by the upstream author is implied.
 
-The maintained repository is [trilogys/sub2api-mate](https://github.com/trilogys/sub2api-mate). It does not automatically merge or synchronize source code from other Sub2API Mobile forks. Its scheduled synchronization reads API metadata from the Sub2API server project only.
+The maintained repository is [dude1wudv/sub2api-mate](https://github.com/dude1wudv/sub2api-mate). It does not automatically merge or synchronize source code from other Sub2API Mobile forks. Its scheduled synchronization reads API metadata from the Sub2API server project only.
 
 ## Overview
 
@@ -84,6 +84,20 @@ Admin Key authentication does not carry a current-user identity. Personal key CR
 - Real-time operations overview with health state, alerts, service logs, request rate, active keys, account state, and recent trends.
 - Dedicated error center and structured operations diagnostics.
 
+### Android home-screen widget
+
+- A native `react-native-android-widget` dashboard card mirrors the last
+  sanitized monitor snapshot without storing credentials or server responses.
+- The renderer uses the launcher-provided width and height to switch between
+  micro, compact, standard, and expanded layouts; weighted columns and Android
+  text auto-sizing prevent clipped labels on narrow or high-density screens.
+- The provider is exported through a small config plugin for Android 11 based
+  launchers such as Honor MagicOS 11, supports light/dark mode, resize events,
+  and the `sub2apimobile://monitor` deep link.
+- Android periodic widget refresh is intentionally limited to the platform's
+  30-minute minimum. Opening the app or refreshing the monitor pushes a fresh
+  snapshot immediately.
+
 ### Account management
 
 - Account creation flows aligned with the official Sub2API account types and fields.
@@ -144,7 +158,7 @@ The optional floating assistant can be enabled from the AI Assistant page. Long-
 
 ### Controlled GitHub repair workflow
 
-GitHub settings default to `trilogys/sub2api-mate` but can be changed and saved. A fine-grained token should be restricted to the selected repository and only the required permissions:
+GitHub settings default to `dude1wudv/sub2api-mate` but can be changed and saved. A fine-grained token should be restricted to the selected repository and only the required permissions:
 
 - Contents: read and write
 - Pull requests: read and write
@@ -182,14 +196,29 @@ From the app, configure a GitHub token with Actions permission, choose the repos
 - Approximate progress calculated from completed steps
 - APK artifact availability, size, expiration, and download entry point
 
-The target repository can be changed in the app; `trilogys/sub2api-mate` is the default.
+The target repository can be changed in the app; `dude1wudv/sub2api-mate` is the default.
+
+### GitHub Release publishing
+
+`.github/workflows/android-release.yml` builds arm64-v8a, armeabi-v7a, and
+x86_64 signed APKs when a `v*` tag is pushed, creates SHA-256 files, and uploads
+all assets to the matching GitHub Release. Configure the following repository
+secrets before publishing:
+
+- `ANDROID_KEYSTORE_BASE64`
+- `ANDROID_KEYSTORE_PASSWORD`
+- `ANDROID_KEY_ALIAS`
+- `ANDROID_KEY_PASSWORD`
+
+The release workflow fails closed when signing secrets are missing so a future
+APK can update an existing installation without changing its signing identity.
 
 ### EAS preview APK
 
 The `preview` profile in `eas.json` uses internal distribution and `android.buildType: apk`.
 
 ```powershell
-cd D:\Project\node\sub2api-mobile
+cd E:\MobileAppWorkspace\02-source-repos\sub2api-mate
 npm ci
 npx eas-cli@latest login
 npx eas-cli@latest build --platform android --profile preview

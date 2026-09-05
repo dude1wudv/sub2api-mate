@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { AlertTriangle, CheckCircle2, Coins, KeyRound, Server, Users, WalletCards } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
@@ -11,6 +11,8 @@ import { getFirstCreatedAdmin } from '@/src/lib/admin-user';
 import { getCurrentUser, getSessionDashboardModels, getSessionDashboardStats, getSessionDashboardTrend, listAccounts, listUsers } from '@/src/services/admin';
 import { adminConfigState, hasAuthenticatedAdminSession, isAdminSession } from '@/src/store/admin-config';
 import { Text } from '@/src/components/localized-text';
+import { createWidgetSnapshot, saveWidgetSnapshot } from '@/src/widgets/widget-data';
+import { requestSub2ApiWidgetUpdate } from '@/src/widgets/widget-sync';
 const { useSnapshot } = require('valtio/react');
 type Range = '24h' | '7d' | '30d';
 
@@ -33,6 +35,17 @@ export default function MonitorScreen() {
   const currentProfileData = currentProfile.data;
   const defaultAdmin = getFirstCreatedAdmin(defaultAdminProfile.data?.items ?? []);
   const profile = currentProfileData ? ('user' in currentProfileData ? currentProfileData.user : currentProfileData) : config.authMode === 'admin_key' ? defaultAdmin : config.user;
+  useEffect(() => {
+    if (!data) return;
+    const snapshot = createWidgetSnapshot(data, {
+      baseUrl: config.baseUrl,
+      role: admin ? 'admin' : 'user',
+      balance: profile?.balance ?? null,
+    });
+    void saveWidgetSnapshot(snapshot)
+      .then(() => requestSub2ApiWidgetUpdate(snapshot))
+      .catch(() => undefined);
+  }, [admin, config.baseUrl, data, profile?.balance]);
   const totalTokens = points.reduce((sum, p) => sum + p.total_tokens, 0); const totalCost = points.reduce((sum, p) => sum + p.cost, 0);
   const cards = admin ? [
     ['用户', compact(data?.total_users), Users, '/users/overview'], ['API 密钥', compact(data?.total_api_keys), KeyRound, '/api-keys'], ['上游账号', compact(data?.total_accounts), Server, '/accounts/overview'], ['异常账号', compact(data?.error_accounts), AlertTriangle, '/ops-errors'], ['剩余额度', money(profile?.balance), WalletCards, '/monitor'], ['今日消费', money(data?.today_cost), Coins, '/usage-logs'],

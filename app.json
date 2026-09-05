@@ -1,9 +1,9 @@
 {
   "expo": {
     "name": "Sub2API Mate",
-    "slug": "sub2api-mobile",
-    "owner": "trilogys",
-    "version": "1.4.0",
+    "slug": "sub2api-mate",
+    "owner": "dude1wudv",
+    "version": "1.5.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,7 +16,7 @@
       "supportsTablet": true,
       "icon": "./assets/icon.png",
       "bundleIdentifier": "com.ppx.sub2apimate",
-      "buildNumber": "9",
+      "buildNumber": "10",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -24,7 +24,7 @@
     "android": {
       "icon": "./assets/icon.png",
       "package": "com.ppx.sub2apimate",
-      "versionCode": 9,
+      "versionCode": 10,
       "permissions": [
         "android.permission.REQUEST_INSTALL_PACKAGES"
       ],
@@ -51,20 +51,40 @@
           }
         }
       ],
+      "./plugins/with-release-signing",
+      "./plugins/with-honor-widget-compatibility",
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "Sub2ApiDashboard",
+              "label": "Sub2API 看板",
+              "description": "查看请求、Token、成本和异常账号",
+              "minWidth": "250dp",
+              "minHeight": "160dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 3,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000
+            }
+          ]
+        }
+      ],
       "expo-font"
     ],
     "extra": {
       "router": {},
-      "eas": {
-        "projectId": "13df808b-fe18-475e-b188-f4dd64e90e7e"
-      }
+      "appRepository": "dude1wudv/sub2api-mate",
+      "appAuthor": "dude1wudv",
+      "updateSource": "github-releases"
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "scheme": "sub2apimobile",
     "updates": {
-      "url": "https://u.expo.dev/13df808b-fe18-475e-b188-f4dd64e90e7e"
+      "enabled": false
     }
   }
 }
