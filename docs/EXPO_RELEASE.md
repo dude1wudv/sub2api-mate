@@ -22,7 +22,7 @@ The in-app Build Center defaults to the GitHub native workflow. GitHub Releases 
 
 | Method | Queue | Required secret | Output | Best use |
 | --- | --- | --- | --- | --- |
-| GitHub native | GitHub Actions | None on the website; an Actions-capable GitHub token when triggered from the app | Android APK artifact | Default release/debug APK builds |
+| GitHub native | GitHub Actions | Debug: none; Release: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | Android APK artifact | Default release/debug APK builds |
 | EAS CLI | EAS Build | Interactive Expo login or local Expo token | APK for `preview` | First-time setup and managed credentials |
 | EAS through GitHub | EAS Build | `EXPO_TOKEN` repository secret | APK and build URL | Automated Expo-hosted builds |
 
@@ -42,6 +42,14 @@ The release artifact is retained for 14 days. Debug artifacts and reports may us
 The workflow runs Node setup, dependency installation, Expo Prebuild, Java/Gradle setup, Gradle APK compilation, and artifact upload. It does not use the EAS free-tier queue and does not require `EXPO_TOKEN`.
 
 When triggered from the app, GitHub Jobs API data is used to show each step's waiting, running, successful, or failed state, an approximate completion percentage, and APK availability.
+
+## GitHub Release publishing
+
+The workflow `.github/workflows/android-release.yml` runs when a `v*` tag is pushed
+and publishes arm64-v8a, armeabi-v7a, and x86_64 APKs plus portable SHA-256 files
+to the matching GitHub Release. It requires the same four signing secrets listed
+above and fails closed if any secret is missing. The current published build is
+[v1.5.0](https://github.com/dude1wudv/sub2api-mate/releases/tag/v1.5.0).
 
 ## First EAS preview APK
 
