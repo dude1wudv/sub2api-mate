@@ -116,6 +116,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout release ref
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
       - name: Download release assets
         uses: actions/download-artifact@v4
         with:
@@ -144,8 +149,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" release-assets/* --clobber
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" release-assets/* --clobber --repo "$GITHUB_REPOSITORY"
           else
-            gh release create "$TAG" release-assets/* --title "Sub2API Mate $TAG" --generate-notes --target "$GITHUB_SHA"
+            gh release create "$TAG" release-assets/* --title "Sub2API Mate $TAG" --generate-notes --target "$GITHUB_SHA" --repo "$GITHUB_REPOSITORY"
           fi
