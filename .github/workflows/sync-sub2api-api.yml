@@ -21,17 +21,17 @@ jobs:
       SYNC_BRANCH: automation/sub2api-api-sync
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 20
 
       - name: Checkout upstream API client metadata
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: Wei-Shaw/sub2api
           path: .upstream-sub2api
